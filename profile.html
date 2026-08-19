@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Profile — rankofficial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0c0d10;
+    --bg-raised: #141519;
+    --card: #1a1b20;
+    --card-2: #1f2025;
+    --border: rgba(255,255,255,0.08);
+    --border-soft: rgba(255,255,255,0.05);
+    --text-1: #f2f1ec;
+    --text-2: #a3a3aa;
+    --text-3: #6c6c74;
+    --accent: #d4a657;
+    --accent-soft: rgba(212,166,87,0.14);
+    --accent-line: rgba(212,166,87,0.35);
+    --poster-a: #232429;
+    --poster-b: #2b2c32;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+  html{ background: var(--bg); }
+  body{
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding-bottom: 84px;
+    overflow-x: hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  a{ color: inherit; text-decoration: none; }
+  button{ font-family: inherit; border: none; background: none; color: inherit; cursor: pointer; }
+
+  .app{ max-width: 560px; margin: 0 auto; position: relative; }
+  @media (min-width: 900px){ .app{ max-width: 720px; } }
+  @media (min-width: 1200px){ .app{ max-width: 960px; } }
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: rgba(12,13,16,0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .logo{
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--font-display); font-weight: 600; font-size: 19px;
+    letter-spacing: -0.01em; color: var(--text-1);
+  }
+  .logo .mark{ width: 7px; height: 7px; border-radius: 2px; background: var(--accent); display: inline-block; transform: rotate(45deg); }
+
+  /* ---------- PROFILE HEAD ---------- */
+  .profile-head{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 26px 18px 10px;
+  }
+  .avatar-lg{
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    margin-bottom: 12px;
+  }
+  .username-lg{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text-1);
+    margin-bottom: 5px;
+  }
+  .bio{
+    font-size: 12.5px;
+    color: var(--text-3);
+    max-width: 280px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .edit-btn{
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-raised);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  /* ---------- STATS ---------- */
+  .stats-row{
+    display: flex;
+    padding: 22px 18px 4px;
+    gap: 10px;
+  }
+  .stat-item{
+    flex: 1;
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 14px 6px;
+  }
+  .stat-num{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 21px;
+    color: var(--text-1);
+  }
+  .stat-label{
+    font-size: 10.5px;
+    color: var(--text-3);
+    margin-top: 3px;
+    font-weight: 500;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .section{ padding: 24px 0 4px; }
+  .section-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0 18px;
+    margin-bottom: 13px;
+  }
+  .section-title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+  }
+  .see-all{
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* ---------- TASTE CARDS ---------- */
+  .taste-list{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 18px;
+  }
+  .taste-card{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 13px 15px;
+  }
+  .taste-label{ font-size: 12.5px; color: var(--text-2); font-weight: 500; }
+  .taste-value{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .taste-value strong{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .taste-bar{
+    width: 64px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .taste-bar-fill{ height: 100%; background: var(--accent); border-radius: 2px; }
+
+  /* ---------- RAIL / POSTERS ---------- */
+  .rail{
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 2px 18px 6px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .rail::-webkit-scrollbar{ display: none; }
+  .rail::after{ content: ""; flex: 0 0 6px; }
+  .poster{
+    display: block;
+    flex: 0 0 auto;
+    width: 108px;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(150deg, var(--poster-b), var(--poster-a) 65%);
+    border: 1px solid var(--border-soft);
+    scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (min-width: 900px){ .poster{ width: 128px; } }
+  .poster::before{
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(200deg, rgba(255,255,255,0.045), transparent 45%);
+  }
+  .poster.ranked .rank-num{
+    position: absolute;
+    top: 6px; left: 7px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(242,241,236,0.55);
+  }
+  .poster.ranked.top3 .rank-num{ color: var(--accent); }
+
+  /* ---------- ACTIVITY ---------- */
+  .activity-list{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 18px;
+  }
+  .activity-item{
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .activity-item:last-child{ border-bottom: none; }
+  .activity-icon{
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .activity-icon svg{ width: 14px; height: 14px; stroke: var(--accent); stroke-width: 1.8; }
+  .activity-text{ flex: 1; font-size: 12.5px; color: var(--text-2); }
+  .activity-time{ font-size: 11px; color: var(--text-3); flex-shrink: 0; }
+
+  /* ---------- TIER LIST PREVIEWS ---------- */
+  .tier-preview-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 18px;
+  }
+  .tier-preview-card{
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 14px;
+  }
+  .tier-preview-title{
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 10px;
+  }
+  .tier-preview-row{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 5px;
+  }
+  .tier-preview-row:last-child{ margin-bottom: 0; }
+  .tier-preview-label{
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .tier-preview-label.s{ background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-line); }
+  .tier-preview-label.a{ background: rgba(242,241,236,0.09); color: var(--text-1); }
+  .tier-preview-label.b{ background: rgba(242,241,236,0.06); color: var(--text-2); }
+  .tier-preview-posters{ display: flex; gap: 5px; }
+  .tier-preview-mini{
+    width: 24px;
+    aspect-ratio: 2 / 3;
+    border-radius: 4px;
+    background: linear-gradient(150deg, var(--poster-b), var(--poster-a) 65%);
+    border: 1px solid var(--border-soft);
+    flex-shrink: 0;
+  }
+
+  /* ---------- BOTTOM NAV ---------- */
+  nav.bottom{
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(15,16,19,0.92);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-soft);
+  }
+  .bottom-inner{ max-width: 560px; margin: 0 auto; display: flex; padding: 8px 6px calc(8px + env(safe-area-inset-bottom)); }
+  @media (min-width: 900px){ .bottom-inner{ max-width: 720px; } }
+  @media (min-width: 1200px){ .bottom-inner{ max-width: 960px; } }
+  .nav-item{ flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0 4px; color: var(--text-3); }
+  .nav-item svg{ width: 21px; height: 21px; stroke: var(--text-3); stroke-width: 1.7; fill: none; }
+  .nav-item span{ font-size: 10.5px; font-weight: 500; }
+  .nav-item.active{ color: var(--accent); }
+  .nav-item.active svg{ stroke: var(--accent); }
+  .nav-item .dot{ width: 3px; height: 3px; margin-top: 1px; border-radius: 50%; }
+  .nav-item.active .dot{ background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="logo"><span class="mark"></span>rankofficial</div>
+  </header>
+
+  <div class="profile-head">
+    <div class="avatar-lg"></div>
+    <div class="username-lg">username</div>
+    <div class="bio">Anime enthusiast. Slow-burn stories and strong finales over hype.</div>
+    <button class="edit-btn">Edit Profile</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">87</div>
+      <div class="stat-label">Titles Rated</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">41</div>
+      <div class="stat-label">Finished</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Tier Lists</div>
+    </div>
+  </div>
+
+  <!-- YOUR TASTE -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Your Taste</div>
+    </div>
+    <div class="taste-list">
+      <div class="taste-card">
+        <div class="taste-label">Average Rating</div>
+        <div class="taste-value"><strong>8.2</strong></div>
+      </div>
+      <div class="taste-card">
+        <div class="taste-label">Most Watched Genre</div>
+        <div class="taste-value">
+          <span style="font-size:12.5px; color: var(--text-1); font-weight:500;">Fantasy</span>
+          <div class="taste-bar"><div class="taste-bar-fill" style="width:78%;"></div></div>
+        </div>
+      </div>
+      <div class="taste-card">
+        <div class="taste-label">Highest Rated Genre</div>
+        <div class="taste-value">
+          <span style="font-size:12.5px; color: var(--text-1); font-weight:500;">Drama</span>
+          <div class="taste-bar"><div class="taste-bar-fill" style="width:91%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOP RATED BY YOU -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Top Rated by You</div>
+    </div>
+    <div class="rail" id="rail-top"></div>
+  </section>
+
+  <!-- RECENT ACTIVITY -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Recent Activity</div>
+    </div>
+    <div class="activity-list" id="activity-list"></div>
+  </section>
+
+  <!-- MY TIER LISTS -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">My Tier Lists</div>
+      <a class="see-all" href="library.html#tierlists">View all →</a>
+    </div>
+    <div class="tier-preview-list">
+      <div class="tier-preview-card">
+        <div class="tier-preview-title">My Anime Rankings</div>
+        <div id="tp-1"></div>
+      </div>
+      <div class="tier-preview-card">
+        <div class="tier-preview-title">Best Anime I've Watched</div>
+        <div id="tp-2"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<nav class="bottom">
+  <div class="bottom-inner">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      <span>Home</span>
+      <div class="dot"></div>
+    </a>
+    <a class="nav-item" href="discover.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-4 2-2 4 4-2 2-4z"/></svg>
+      <span>Discover</span>
+      <div class="dot"></div>
+    </a>
+    <a class="nav-item" href="library.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9a2 2 0 0 1 2 2v16l-6.5-4L4 21V5a2 2 0 0 1 2-2z"/></svg>
+      <span>Library</span>
+      <div class="dot"></div>
+    </a>
+    <a class="nav-item active" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.4-4 4-6 7.5-6s6.1 2 7.5 6"/></svg>
+      <span>Profile</span>
+      <div class="dot"></div>
+    </a>
+  </div>
+</nav>
+
+<script>
+  function makeRail(container, count, opts={}){
+    const el = document.getElementById(container);
+    for(let i=1;i<=count;i++){
+      const p = document.createElement('a');
+      p.href = 'title.html';
+      p.className = 'poster' + (opts.ranked ? ' ranked' + (i<=3 ? ' top3' : '') : '');
+      if(opts.ranked){
+        const n = document.createElement('div');
+        n.className = 'rank-num';
+        n.textContent = '#' + i;
+        p.appendChild(n);
+      }
+      el.appendChild(p);
+    }
+  }
+  makeRail('rail-top', 9, { ranked: true });
+
+  const activities = [
+    { text: 'Rated Paper Moth Season 9/10', time: '2h ago', icon: '<path d="M12 17.3 6.2 21l1.5-6.6L2 9.9l6.7-.6L12 3l3.3 6.3 6.7.6-5.7 4.5 1.5 6.6z"/>' },
+    { text: 'Added Ashfall Requiem to Finished', time: '1d ago', icon: '<path d="M20 6L9 17l-5-5"/>' },
+    { text: 'Created a tier list — "Best Anime I\'ve Watched"', time: '3d ago', icon: '<path d="M4 6h16M4 12h16M4 18h10"/>' }
+  ];
+  const activityList = document.getElementById('activity-list');
+  activities.forEach(a => {
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+      <div class="activity-icon"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">${a.icon}</svg></div>
+      <div class="activity-text">${a.text}</div>
+      <div class="activity-time">${a.time}</div>
+    `;
+    activityList.appendChild(item);
+  });
+
+  function makeTierPreview(id){
+    const el = document.getElementById(id);
+    const rows = [
+      { label: 'S', cls: 's', count: 3 },
+      { label: 'A', cls: 'a', count: 5 },
+      { label: 'B', cls: 'b', count: 4 }
+    ];
+    rows.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'tier-preview-row';
+      const label = document.createElement('div');
+      label.className = 'tier-preview-label ' + r.cls;
+      label.textContent = r.label;
+      row.appendChild(label);
+      const posters = document.createElement('div');
+      posters.className = 'tier-preview-posters';
+      for(let i=0;i<r.count;i++){
+        const m = document.createElement('div');
+        m.className = 'tier-preview-mini';
+        posters.appendChild(m);
+      }
+      row.appendChild(posters);
+      el.appendChild(row);
+    });
+  }
+  makeTierPreview('tp-1');
+  makeTierPreview('tp-2');
+</script>
+</body>
+</html>

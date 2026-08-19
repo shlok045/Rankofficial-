@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Anime Title — rankofficial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0c0d10;
+    --bg-raised: #141519;
+    --card: #1a1b20;
+    --card-2: #1f2025;
+    --border: rgba(255,255,255,0.08);
+    --border-soft: rgba(255,255,255,0.05);
+    --text-1: #f2f1ec;
+    --text-2: #a3a3aa;
+    --text-3: #6c6c74;
+    --accent: #d4a657;
+    --accent-soft: rgba(212,166,87,0.14);
+    --accent-line: rgba(212,166,87,0.35);
+    --poster-a: #232429;
+    --poster-b: #2b2c32;
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+  html{ background: var(--bg); }
+  body{
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding-bottom: 84px;
+    overflow-x: hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  a{ color: inherit; text-decoration: none; }
+  button{ font-family: inherit; border: none; background: none; color: inherit; cursor: pointer; }
+
+  .app{ max-width: 560px; margin: 0 auto; position: relative; }
+  @media (min-width: 900px){ .app{ max-width: 720px; } }
+  @media (min-width: 1200px){ .app{ max-width: 960px; } }
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(12,13,16,0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .back-btn{
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .back-btn svg{ width: 16px; height: 16px; stroke: var(--text-2); stroke-width: 2; }
+  .header-label{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-3);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    display: flex;
+    gap: 14px;
+    padding: 18px 18px 4px;
+  }
+  .hero-poster{
+    flex: 0 0 auto;
+    width: 128px;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-md);
+    background: linear-gradient(150deg, var(--poster-b), var(--poster-a) 65%);
+    border: 1px solid var(--border-soft);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-poster::before{
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(200deg, rgba(255,255,255,0.05), transparent 45%);
+  }
+  @media (min-width: 640px){ .hero-poster{ width: 150px; } }
+
+  .hero-info{ flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .anime-title{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .genre-tags{
+    font-size: 12px;
+    color: var(--text-3);
+    margin-bottom: 10px;
+  }
+  .synopsis{
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  .synopsis.clamped{
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .read-more{
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 6px;
+    display: inline-block;
+  }
+
+  /* ---------- RATINGS ---------- */
+  .ratings-row{
+    display: flex;
+    gap: 10px;
+    padding: 18px 18px 4px;
+  }
+  .rating-card{
+    flex: 1;
+    border-radius: var(--radius-md);
+    padding: 13px 14px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+  }
+  .rating-card.official{
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+  }
+  .rating-source{
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .rating-card.official .rating-source{ color: var(--accent); }
+  .rating-value{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+    color: var(--text-1);
+  }
+  .rating-value svg{ width: 15px; height: 15px; fill: var(--text-3); stroke: none; }
+  .rating-card.official .rating-value svg{ fill: var(--accent); }
+  .rating-card.official .rating-value{ color: var(--accent); }
+
+  /* ---------- RECOMMENDATION ---------- */
+  .recommend-block{
+    margin: 16px 18px 4px;
+    padding: 14px 15px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+  }
+  .recommend-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 9px;
+  }
+  .recommend-title{ font-size: 12.5px; font-weight: 600; color: var(--text-1); }
+  .recommend-pct{
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .recommend-track{
+    height: 5px;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+    margin-bottom: 7px;
+  }
+  .recommend-fill{ height: 100%; background: var(--accent); border-radius: 3px; }
+  .recommend-caption{ font-size: 11px; color: var(--text-3); }
+
+  /* ---------- ACTIONS ---------- */
+  .actions-row{
+    display: flex;
+    gap: 10px;
+    padding: 16px 18px 4px;
+  }
+  .action-btn{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 13px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .action-btn.secondary{
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text-1);
+  }
+  .action-btn.secondary.added{
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    color: var(--accent);
+  }
+  .action-btn.primary{
+    background: var(--accent);
+    color: #16130b;
+  }
+  .action-btn.primary.rated{
+    background: var(--accent);
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .section{ padding: 24px 0 4px; }
+  .section-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0 18px;
+    margin-bottom: 13px;
+  }
+  .section-title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--text-1);
+  }
+  .see-all{
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* ---------- REVIEWS (reused) ---------- */
+  .community-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 18px;
+  }
+  .review-card{
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 13px 14px;
+  }
+  .review-top{ display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+  .avatar{
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    flex-shrink: 0;
+  }
+  .review-meta{ flex: 1; min-width: 0; }
+  .username{ font-size: 12.5px; font-weight: 600; color: var(--text-1); }
+  .rating-chip{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    padding: 3px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .review-text{
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .review-actions{ display: flex; gap: 16px; }
+  .review-actions span{
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11.5px; color: var(--text-3); font-weight: 500;
+  }
+  .review-actions svg{ width: 13px; height: 13px; stroke: var(--text-3); }
+
+  .write-review-btn{
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px; margin: 0 18px 10px;
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border);
+    color: var(--accent);
+    font-size: 12.5px; font-weight: 600;
+  }
+
+  /* ---------- OVERLAYS ---------- */
+  .overlay-scrim{
+    position: fixed; inset: 0;
+    background: rgba(6,6,8,0.66);
+    backdrop-filter: blur(3px);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+  .overlay-scrim.visible{ opacity: 1; pointer-events: auto; }
+
+  /* --- Add to library sheet --- */
+  .sheet{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 95;
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+    padding: 8px 18px calc(20px + env(safe-area-inset-bottom));
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(.32,.72,0,1);
+  }
+  @media (min-width: 900px){ .sheet{ max-width: 720px; } }
+  @media (min-width: 1200px){ .sheet{ max-width: 960px; } }
+  .sheet.visible{ transform: translateY(0); }
+  .sheet-handle{
+    width: 34px; height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    margin: 6px auto 14px;
+  }
+  .sheet-title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 12px;
+    color: var(--text-1);
+  }
+  .sheet-option{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 4px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13.5px;
+    color: var(--text-2);
+  }
+  .sheet-option:last-child{ border-bottom: none; }
+  .sheet-option .check{
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .sheet-option.selected{ color: var(--text-1); font-weight: 600; }
+  .sheet-option.selected .check{
+    background: var(--accent);
+    border-color: var(--accent);
+    position: relative;
+  }
+  .sheet-option.selected .check::after{
+    content: "";
+    position: absolute;
+    left: 5px; top: 2px;
+    width: 5px; height: 9px;
+    border-right: 2px solid #16130b;
+    border-bottom: 2px solid #16130b;
+    transform: rotate(40deg);
+  }
+
+  /* --- Rating modal --- */
+  .rate-modal{
+    position: fixed;
+    left: 50%; top: 50%;
+    z-index: 96;
+    width: calc(100% - 40px);
+    max-width: 380px;
+    transform: translate(-50%, -50%) scale(0.94);
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px calc(22px + env(safe-area-inset-bottom));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  .rate-modal.visible{ opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+
+  .rate-modal-head{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 22px;
+  }
+  .rate-modal-title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-1);
+  }
+  .rate-close{
+    position: absolute;
+    right: 0; top: -2px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    color: var(--text-2);
+  }
+
+  .rate-score-display{ text-align: center; margin-bottom: 20px; }
+  .rate-score-num{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 44px;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .rate-score-label{
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    margin-top: 6px;
+    min-height: 16px;
+  }
+
+  .rate-slider-wrap{ padding: 0 2px 8px; margin-bottom: 6px; }
+  input[type="range"].rate-slider{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+  }
+  input[type="range"].rate-slider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid #16130b;
+    box-shadow: 0 0 0 1px var(--accent-line);
+    cursor: pointer;
+  }
+  input[type="range"].rate-slider::-moz-range-thumb{
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid #16130b;
+    cursor: pointer;
+  }
+  .rate-scale-ends{
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-3);
+    padding: 0 2px;
+    margin-top: 6px;
+    margin-bottom: 22px;
+  }
+
+  .rate-actions{ display: flex; gap: 10px; }
+  .rate-btn{
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .rate-btn.cancel{
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+  }
+  .rate-btn.confirm{
+    background: var(--accent);
+    color: #16130b;
+  }
+
+  /* ---------- BOTTOM NAV ---------- */
+  nav.bottom{
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(15,16,19,0.92);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-soft);
+  }
+  .bottom-inner{ max-width: 560px; margin: 0 auto; display: flex; padding: 8px 6px calc(8px + env(safe-area-inset-bottom)); }
+  @media (min-width: 900px){ .bottom-inner{ max-width: 720px; } }
+  @media (min-width: 1200px){ .bottom-inner{ max-width: 960px; } }
+  .nav-item{ flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0 4px; color: var(--text-3); }
+  .nav-item svg{ width: 21px; height: 21px; stroke: var(--text-3); stroke-width: 1.7; fill: none; }
+  .nav-item span{ font-size: 10.5px; font-weight: 500; }
+  .nav-item .dot{ width: 3px; height: 3px; margin-top: 1px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </a>
+    <span class="header-label">Title</span>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-poster"></div>
+    <div class="hero-info">
+      <div class="anime-title">Anime Title</div>
+      <div class="genre-tags">Action • Fantasy • Drama</div>
+      <div class="synopsis clamped" id="synopsis">
+        In a world where fractured kingdoms war over a fading source of power, a reluctant wanderer is pulled back into a conflict they swore to leave behind. As old allegiances resurface and new threats emerge from the borderlands, they must decide whether the cost of peace is one they are willing to pay again — and what remains of who they used to be once the fighting stops.
+      </div>
+      <button class="read-more" id="readMoreBtn">Read more</button>
+    </div>
+  </div>
+
+  <!-- RATINGS -->
+  <div class="ratings-row">
+    <div class="rating-card">
+      <div class="rating-source">MyAnimeList</div>
+      <div class="rating-value">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg>
+        8.9
+      </div>
+    </div>
+    <div class="rating-card official">
+      <div class="rating-source">rankofficial Score</div>
+      <div class="rating-value">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg>
+        <span id="officialScore">9.2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="recommend-block">
+    <div class="recommend-head">
+      <div class="recommend-title">Community Recommendation</div>
+      <div class="recommend-pct">94%</div>
+    </div>
+    <div class="recommend-track"><div class="recommend-fill" style="width:94%;"></div></div>
+    <div class="recommend-caption">Based on 4,281 recommendations</div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions-row">
+    <button class="action-btn secondary" id="addLibraryBtn">+ Add to Library</button>
+    <button class="action-btn primary" id="rateBtn">★ Rate</button>
+  </div>
+
+  <!-- COMMUNITY REVIEWS -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Community Reviews</div>
+      <a class="see-all" href="#">View all reviews →</a>
+    </div>
+    <button class="write-review-btn">Write a review</button>
+    <div class="community-list" id="community-list"></div>
+  </section>
+
+</div>
+
+<!-- OVERLAY SCRIM -->
+<div class="overlay-scrim" id="scrim"></div>
+
+<!-- ADD TO LIBRARY SHEET -->
+<div class="sheet" id="librarySheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Add to Library</div>
+  <div class="sheet-option" data-val="Watching"><span>Watching</span><span class="check"></span></div>
+  <div class="sheet-option" data-val="Planning"><span>Planning</span><span class="check"></span></div>
+  <div class="sheet-option" data-val="Finished"><span>Finished</span><span class="check"></span></div>
+  <div class="sheet-option" data-val="Dropped"><span>Dropped</span><span class="check"></span></div>
+  <div class="sheet-option" data-val="Custom List"><span>Custom List</span><span class="check"></span></div>
+</div>
+
+<!-- RATING MODAL -->
+<div class="rate-modal" id="rateModal">
+  <div class="rate-modal-head">
+    <div class="rate-modal-title">Rate Anime</div>
+    <button class="rate-close" id="rateCloseBtn">×</button>
+  </div>
+  <div class="rate-score-display">
+    <div class="rate-score-num" id="rateScoreNum">5.0</div>
+    <div class="rate-score-label" id="rateScoreLabel">Mid</div>
+  </div>
+  <div class="rate-slider-wrap">
+    <input type="range" class="rate-slider" id="rateSlider" min="0" max="20" step="1" value="10">
+  </div>
+  <div class="rate-scale-ends"><span>0</span><span>10</span></div>
+  <div class="rate-actions">
+    <button class="rate-btn cancel" id="rateCancelBtn">Cancel</button>
+    <button class="rate-btn confirm" id="rateConfirmBtn">Confirm</button>
+  </div>
+</div>
+
+<nav class="bottom">
+  <div class="bottom-inner">
+    <a class="nav-item" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      <span>Home</span>
+      <div class="dot"></div>
+    </a>
+    <a class="nav-item" href="discover.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-4 2-2 4 4-2 2-4z"/></svg>
+      <span>Discover</span>
+      <div class="dot"></div>
+    </a>
+    <a class="nav-item" href="library.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9a2 2 0 0 1 2 2v16l-6.5-4L4 21V5a2 2 0 0 1 2-2z"/></svg>
+      <span>Library</span>
+      <div class="dot"></div>
+    </a>
+    <a class="nav-item" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.4-4 4-6 7.5-6s6.1 2 7.5 6"/></svg>
+      <span>Profile</span>
+      <div class="dot"></div>
+    </a>
+  </div>
+</nav>
+
+<script>
+  /* ---------- Community reviews ---------- */
+  const reviews = [
+    { user: 'kaidoscope', rating: '9/10', text: 'The pacing in the back half completely reframes the first arc — rewatched it twice already.', likes: 214, comments: 38 },
+    { user: 'nell.does.reviews', rating: '10/10', text: 'Quietly devastating. The score alone deserves its own separate ranking honestly.', likes: 341, comments: 57 },
+    { user: 'ordinary_orbit', rating: '8/10', text: 'A slow burn that rewards patience — the back half is where it really clicks.', likes: 128, comments: 21 }
+  ];
+  const list = document.getElementById('community-list');
+  reviews.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.innerHTML = `
+      <div class="review-top">
+        <div class="avatar"></div>
+        <div class="review-meta"><div class="username">${r.user}</div></div>
+        <div class="rating-chip">${r.rating}</div>
+      </div>
+      <div class="review-text">${r.text}</div>
+      <div class="review-actions">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-1 1v7H5a2 2 0 0 0-2 2l1.5 8a2 2 0 0 0 2 1.6H17a2 2 0 0 0 2-1.7l1-6A2 2 0 0 0 18 11h-4z"/></svg>${r.likes}</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.5 9 9 0 0 1-3.8-.8L3 21l1.8-5.3A8.4 8.4 0 0 1 12.5 3a8.4 8.4 0 0 1 8.5 8.5z"/></svg>${r.comments}</span>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  /* ---------- Read more toggle ---------- */
+  const synopsis = document.getElementById('synopsis');
+  const readMoreBtn = document.getElementById('readMoreBtn');
+  readMoreBtn.addEventListener('click', () => {
+    const collapsed = synopsis.classList.toggle('clamped');
+    readMoreBtn.textContent = collapsed ? 'Read more' : 'Read less';
+  });
+
+  /* ---------- Overlay helpers ---------- */
+  const scrim = document.getElementById('scrim');
+  const librarySheet = document.getElementById('librarySheet');
+  const rateModal = document.getElementById('rateModal');
+
+  function openSheet(){
+    scrim.classList.add('visible');
+    librarySheet.classList.add('visible');
+  }
+  function closeSheet(){
+    scrim.classList.remove('visible');
+    librarySheet.classList.remove('visible');
+  }
+  function openRateModal(){
+    scrim.classList.add('visible');
+    rateModal.classList.add('visible');
+  }
+  function closeRateModal(){
+    scrim.classList.remove('visible');
+    rateModal.classList.remove('visible');
+  }
+  scrim.addEventListener('click', () => { closeSheet(); closeRateModal(); });
+
+  /* ---------- Add to library sheet ---------- */
+  const addLibraryBtn = document.getElementById('addLibraryBtn');
+  addLibraryBtn.addEventListener('click', openSheet);
+
+  document.querySelectorAll('.sheet-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.sheet-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      const val = opt.dataset.val;
+      setTimeout(() => {
+        closeSheet();
+        addLibraryBtn.textContent = '✓ ' + val;
+        addLibraryBtn.classList.add('added');
+      }, 240);
+    });
+  });
+
+  /* ---------- Rating modal ---------- */
+  const rateBtn = document.getElementById('rateBtn');
+  const rateCloseBtn = document.getElementById('rateCloseBtn');
+  const rateCancelBtn = document.getElementById('rateCancelBtn');
+  const rateConfirmBtn = document.getElementById('rateConfirmBtn');
+  const rateSlider = document.getElementById('rateSlider');
+  const rateScoreNum = document.getElementById('rateScoreNum');
+  const rateScoreLabel = document.getElementById('rateScoreLabel');
+  const officialScore = document.getElementById('officialScore');
+
+  const labels = [
+    'Absolutely Worst','Pathetic','Garbage','Unbearable','Worst',
+    'Waste of Time','Very Bad','','','Disappointment',
+    'Mid','Decent','Could Have Been Better','Nice','Great',
+    'Really Good','Worth It','Crezyyy','Peak','Masterpiece','Absolute Cinema'
+  ];
+
+  function updateSliderVisual(){
+    const idx = parseInt(rateSlider.value, 10);
+    const val = (idx / 2).toFixed(1);
+    rateScoreNum.textContent = val;
+    rateScoreLabel.textContent = labels[idx];
+    const pct = (idx / 20) * 100;
+    rateSlider.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--border) ${pct}%)`;
+  }
+
+  rateSlider.addEventListener('input', updateSliderVisual);
+
+  rateBtn.addEventListener('click', () => {
+    updateSliderVisual();
+    openRateModal();
+  });
+  rateCloseBtn.addEventListener('click', closeRateModal);
+  rateCancelBtn.addEventListener('click', closeRateModal);
+  rateConfirmBtn.addEventListener('click', () => {
+    const idx = parseInt(rateSlider.value, 10);
+    const val = (idx / 2).toFixed(1);
+    officialScore.textContent = val;
+    rateBtn.textContent = '★ Rated ' + val;
+    rateBtn.classList.add('rated');
+    closeRateModal();
+  });
+
+  updateSliderVisual();
+</script>
+</body>
+</html>

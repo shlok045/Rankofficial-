@@ -1,2 +1,16 @@
-# Rankofficial-
-RankOfficial is an anime discovery and rating platform where users can explore anime, manage personalized watchlists, rate titles, write comments, and create their own anime tier lists.
+# rankofficial
+
+Static deployment package for the rankofficial prototype.
+
+## Structure
+
+- `public/` — the five prototype pages
+- `wrangler.jsonc` — Cloudflare Workers Static Assets configuration
+
+## Cloudflare
+
+The Worker is configured to serve `public/` as static assets. No build command is required for this prototype.
+
+Deploy command:
+
+`npx wrangler deploy`
