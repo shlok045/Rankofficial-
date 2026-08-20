@@ -41,14 +41,14 @@ export default {
     }
 
         if (url.pathname === "/api/auth/mal/callback") {
-      const code = url.searchParams.get("code");
-      const state = url.searchParams.get("state");
+          const code = url.searchParams.get("code");
+          const state = url.searchParams.get("state");
 
-      return Response.json({
-        received: true,
-        hasCode: !!code,
-        state: state || null
-      });
-    }
+          return Response.json({
+            received: true,
+            hasCode: !!code,
+            state: state || null
+          });
+        }
 
-    return env.ASSETS.fetch(request);
+        return env.ASSETS.fetch(request);
