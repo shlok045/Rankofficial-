@@ -52,3 +52,5 @@ export default {
         }
 
         return env.ASSETS.fetch(request);
+      }
+    };
