@@ -5,7 +5,8 @@ export default {
     if (url.pathname === "/api/test") {
       return Response.json({
         status: "ok",
-        bindings: Object.keys(env)
+        clientIdLoaded: !!env.MAL_CLIENT_ID,
+        clientSecretLoaded: !!env.MAL_CLIENT_SECRET
       });
     }
 
