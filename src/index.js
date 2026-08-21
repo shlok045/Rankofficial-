@@ -5,10 +5,9 @@ export default {
     if (url.pathname === "/api/test") {
       return Response.json({
         status: "ok",
-        clientIdLoaded: !!env.MAL_CLIENT_ID,
-        clientSecretLoaded: !!env.MAL_CLIENT_SECRET
+        bindings: Object.keys(env)
       });
-     }
+    }
 
     if (url.pathname === "/api/anime/search") {
       const query = url.searchParams.get("q");
