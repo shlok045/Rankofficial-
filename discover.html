@@ -489,8 +489,6 @@
 </nav>
 
 <script>
-  /* ---------- EXISTING DISCOVER UI ---------- */
-
   function makeRail(container, count, opts = {}) {
     const el = document.getElementById(container);
 
@@ -500,9 +498,7 @@
       p.href = 'title.html';
       p.className =
         'poster' +
-        (opts.ranked
-          ? ' ranked' + (i <= 3 ? ' top3' : '')
-          : '');
+        (opts.ranked ? ' ranked' + (i <= 3 ? ' top3' : '') : '');
 
       if (opts.ranked) {
         const n = document.createElement('div');
@@ -515,21 +511,13 @@
     }
   }
 
+  // Initial placeholder rails
   makeRail('rail-trending', 10);
   makeRail('rail-rated', 10, { ranked: true });
   makeRail('rail-popular', 9);
 
-
-  /* ---------- GENRES ---------- */
-
-  const genres = [
-    'Action',
-    'Romance',
-    'Drama',
-    'Fantasy',
-    'Comedy'
-  ];
-
+  // Genres
+  const genres = ['Action', 'Romance', 'Drama', 'Fantasy', 'Comedy'];
   const genreGrid = document.getElementById('genre-grid');
 
   genres.forEach(g => {
@@ -540,13 +528,10 @@
 
     card.innerHTML = `
       <span>${g}</span>
-
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+      <svg viewBox="0 0 24 24" fill="none"
+           stroke="currentColor"
+           stroke-linecap="round"
+           stroke-linejoin="round">
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     `;
@@ -555,268 +540,136 @@
   });
 
 
-  /* ---------- ANIME SEARCH ---------- */
+  // =========================
+  // ANIME SEARCH
+  // =========================
 
   const searchInput = document.getElementById('anime-search');
-  const searchResults = document.getElementById('search-results');
 
-  let searchTimer = null;
-  let currentController = null;
+  const searchResults = document.createElement('section');
+  searchResults.className = 'section';
+  searchResults.id = 'search-results';
 
+  searchResults.innerHTML = `
+    <div class="section-head">
+      <div class="section-title">Search Results</div>
+    </div>
 
-  function hideSearchResults() {
-    searchResults.classList.remove('visible');
-    searchResults.innerHTML = '';
-  }
+    <div class="rail" id="rail-search"></div>
+  `;
 
+  const searchWrap = document.querySelector('.search-wrap');
+  searchWrap.insertAdjacentElement('afterend', searchResults);
 
-  function showSearchStatus(message, type = '') {
-    searchResults.innerHTML = `
-      <div class="search-status ${type}">
-        ${message}
-      </div>
-    `;
+  const searchRail = document.getElementById('rail-search');
 
-    searchResults.classList.add('visible');
-  }
+  searchResults.style.display = 'none';
 
 
-  function escapeHTML(value) {
-    const div = document.createElement('div');
-    div.textContent = value ?? '';
-    return div.innerHTML;
-  }
+  let searchTimer;
 
 
-  function renderSearchResults(animeList) {
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimer);
 
-    if (!animeList || animeList.length === 0) {
-      showSearchStatus(`
-        <strong>No anime found</strong>
-        Try searching with another title.
-      `);
+    const query = searchInput.value.trim();
 
+    if (!query) {
+      searchResults.style.display = 'none';
+      searchRail.innerHTML = '';
       return;
     }
 
-
-    searchResults.innerHTML = '';
-
-
-    animeList.forEach(item => {
-
-      const anime = item.node;
-
-      if (!anime) return;
-
-
-      const result = document.createElement('a');
-
-      result.className = 'search-result';
-
-      /*
-       * We will use this ID later when title.html
-       * becomes connected to the MAL details endpoint.
-       */
-      result.href =
-        'title.html?id=' +
-        encodeURIComponent(anime.id);
-
-
-      const poster =
-        anime.main_picture?.medium ||
-        anime.main_picture?.large ||
-        '';
-
-
-      const genres =
-        anime.genres
-          ?.slice(0, 3)
-          .map(g => g.name)
-          .join(' • ') ||
-        'Anime';
-
-
-      const score =
-        anime.mean != null
-          ? anime.mean.toFixed(2)
-          : 'N/A';
-
-
-      result.innerHTML = `
-        <img
-          class="search-result-poster"
-          src="${escapeHTML(poster)}"
-          alt=""
-          loading="lazy"
-        >
-
-        <div class="search-result-info">
-
-          <div class="search-result-title">
-            ${escapeHTML(anime.title)}
-          </div>
-
-          <div class="search-result-meta">
-
-            <span class="search-result-score">
-              ★ ${score}
-            </span>
-
-            ${
-              anime.rank
-                ? `<span>#${anime.rank}</span>`
-                : ''
-            }
-
-          </div>
-
-          <div class="search-result-genres">
-            ${escapeHTML(genres)}
-          </div>
-
-        </div>
-
-        <svg
-          class="search-result-arrow"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      `;
-
-
-      searchResults.appendChild(result);
-    });
-
-
-    searchResults.classList.add('visible');
-  }
+    searchTimer = setTimeout(() => {
+      searchAnime(query);
+    }, 400);
+  });
 
 
   async function searchAnime(query) {
 
-    const trimmedQuery = query.trim();
+    searchResults.style.display = 'block';
 
-
-    if (!trimmedQuery) {
-      hideSearchResults();
-      return;
-    }
-
-
-    /*
-     * Cancel the previous request if the user
-     * searches again before it finishes.
-     */
-    if (currentController) {
-      currentController.abort();
-    }
-
-    currentController = new AbortController();
-
-
-    showSearchStatus('Searching...');
-
+    searchRail.innerHTML = `
+      <div style="
+        padding: 20px 18px;
+        color: var(--text-3);
+        font-size: 13px;
+      ">
+        Searching...
+      </div>
+    `;
 
     try {
 
       const response = await fetch(
-        '/api/anime/search?q=' +
-        encodeURIComponent(trimmedQuery),
-        {
-          signal: currentController.signal
-        }
+        '/api/anime/search?q=' + encodeURIComponent(query)
       );
 
-
       if (!response.ok) {
-        throw new Error(
-          'Search request failed'
-        );
+        throw new Error('Search request failed');
       }
-
 
       const data = await response.json();
 
+      searchRail.innerHTML = '';
 
-      renderSearchResults(data.data);
+      if (!data.data || data.data.length === 0) {
 
+        searchRail.innerHTML = `
+          <div style="
+            padding: 20px 18px;
+            color: var(--text-3);
+            font-size: 13px;
+          ">
+            No anime found.
+          </div>
+        `;
 
-    } catch (error) {
-
-      if (error.name === 'AbortError') {
         return;
       }
 
 
+      data.data.forEach(item => {
+
+        const anime = item.node;
+
+        const poster = document.createElement('a');
+
+        poster.className = 'poster';
+        poster.href = 'title.html?id=' + anime.id;
+
+        if (anime.main_picture) {
+
+          poster.style.backgroundImage =
+            `url("${anime.main_picture.large || anime.main_picture.medium}")`;
+
+          poster.style.backgroundSize = 'cover';
+          poster.style.backgroundPosition = 'center';
+        }
+
+        poster.title = anime.title;
+
+        searchRail.appendChild(poster);
+
+      });
+
+    } catch (error) {
+
       console.error(error);
 
-
-      showSearchStatus(
-        `
-          <strong>Something went wrong</strong>
-          Please try again.
-        `,
-        'error'
-      );
+      searchRail.innerHTML = `
+        <div style="
+          padding: 20px 18px;
+          color: var(--text-3);
+          font-size: 13px;
+        ">
+          Something went wrong. Please try again.
+        </div>
+      `;
     }
   }
-
-
-  searchInput.addEventListener('input', () => {
-
-    clearTimeout(searchTimer);
-
-
-    const query = searchInput.value;
-
-
-    /*
-     * Small delay prevents sending a request
-     * for every single keystroke.
-     */
-    searchTimer = setTimeout(() => {
-      searchAnime(query);
-    }, 350);
-
-  });
-
-
-  /*
-   * Close search results when clicking outside.
-   */
-  document.addEventListener('click', event => {
-
-    if (
-      !searchResults.contains(event.target) &&
-      !searchInput.contains(event.target)
-    ) {
-      hideSearchResults();
-    }
-
-  });
-
-
-  /*
-   * Keep the results visible when the user
-   * clicks back into the search field.
-   */
-  searchInput.addEventListener('focus', () => {
-
-    if (
-      searchResults.innerHTML.trim() !== '' &&
-      searchInput.value.trim() !== ''
-    ) {
-      searchResults.classList.add('visible');
-    }
-
-  });
-
-              </script>
+</script>
 
 </body>
 </html>
