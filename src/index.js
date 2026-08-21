@@ -5,9 +5,10 @@ export default {
     if (url.pathname === "/api/test") {
       return Response.json({
         status: "ok",
-        message: "RankOfficial backend is working!"
+        clientIdLoaded: !!env.MAL_CLIENT_ID,
+        clientSecretLoaded: !!env.MAL_CLIENT_SECRET
       });
-    }
+     }
 
     if (url.pathname === "/api/anime/search") {
       const query = url.searchParams.get("q");
