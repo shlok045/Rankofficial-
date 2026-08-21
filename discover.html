@@ -254,6 +254,146 @@
   .nav-item.active svg{ stroke: var(--accent); }
   .nav-item .dot{ width: 3px; height: 3px; margin-top: 1px; border-radius: 50%; }
   .nav-item.active .dot{ background: var(--accent); }
+  /* ---------- SEARCH RESULTS ---------- */
+
+.search-wrap{
+  position: relative;
+  z-index: 30;
+}
+
+.search-bar{
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.search-bar:focus-within{
+  border-color: var(--accent-line);
+  background: var(--card);
+}
+
+.search-results{
+  display: none;
+  margin: 8px 18px 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+}
+
+.search-results.visible{
+  display: block;
+}
+
+.search-result{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-soft);
+  transition: background 0.15s ease;
+}
+
+.search-result:last-child{
+  border-bottom: none;
+}
+
+.search-result:hover,
+.search-result:active{
+  background: var(--card-2);
+}
+
+.search-result-poster{
+  width: 48px;
+  height: 68px;
+  flex: 0 0 48px;
+  border-radius: 7px;
+  object-fit: cover;
+  background: linear-gradient(
+    150deg,
+    var(--poster-b),
+    var(--poster-a)
+  );
+}
+
+.search-result-info{
+  min-width: 0;
+  flex: 1;
+}
+
+.search-result-title{
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-1);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-meta{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.search-result-score{
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.search-result-genres{
+  margin-top: 5px;
+  font-size: 10px;
+  color: var(--text-3);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-arrow{
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke: var(--text-3);
+}
+
+.search-status{
+  padding: 18px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.search-status.error{
+  color: #c87878;
+}
+
+.search-status strong{
+  display: block;
+  color: var(--text-2);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+@media (min-width: 640px){
+  .search-results{
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .search-result-poster{
+    width: 52px;
+    height: 74px;
+    flex-basis: 52px;
+  }
+}
 </style>
 </head>
 <body>
@@ -273,6 +413,7 @@
       <input type="text" placeholder="Search anime...">
     </div>
   </div>
+  <div class="search-results" id="search-results"></div>
 
   <!-- TRENDING -->
   <section class="section" id="trending">
@@ -348,18 +489,28 @@
 </nav>
 
 <script>
-  function makeRail(container, count, opts={}){
+  /* ---------- EXISTING DISCOVER UI ---------- */
+
+  function makeRail(container, count, opts = {}) {
     const el = document.getElementById(container);
-    for(let i=1;i<=count;i++){
+
+    for (let i = 1; i <= count; i++) {
       const p = document.createElement('a');
+
       p.href = 'title.html';
-      p.className = 'poster' + (opts.ranked ? ' ranked' + (i<=3 ? ' top3' : '') : '');
-      if(opts.ranked){
+      p.className =
+        'poster' +
+        (opts.ranked
+          ? ' ranked' + (i <= 3 ? ' top3' : '')
+          : '');
+
+      if (opts.ranked) {
         const n = document.createElement('div');
         n.className = 'rank-num';
         n.textContent = '#' + i;
         p.appendChild(n);
       }
+
       el.appendChild(p);
     }
   }
@@ -368,18 +519,304 @@
   makeRail('rail-rated', 10, { ranked: true });
   makeRail('rail-popular', 9);
 
-  const genres = ['Action','Romance','Drama','Fantasy','Comedy'];
+
+  /* ---------- GENRES ---------- */
+
+  const genres = [
+    'Action',
+    'Romance',
+    'Drama',
+    'Fantasy',
+    'Comedy'
+  ];
+
   const genreGrid = document.getElementById('genre-grid');
+
   genres.forEach(g => {
     const card = document.createElement('a');
+
     card.className = 'genre-select-card';
     card.href = '#';
+
     card.innerHTML = `
       <span>${g}</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
     `;
+
     genreGrid.appendChild(card);
   });
-</script>
+
+
+  /* ---------- ANIME SEARCH ---------- */
+
+  const searchInput = document.getElementById('anime-search');
+  const searchResults = document.getElementById('search-results');
+
+  let searchTimer = null;
+  let currentController = null;
+
+
+  function hideSearchResults() {
+    searchResults.classList.remove('visible');
+    searchResults.innerHTML = '';
+  }
+
+
+  function showSearchStatus(message, type = '') {
+    searchResults.innerHTML = `
+      <div class="search-status ${type}">
+        ${message}
+      </div>
+    `;
+
+    searchResults.classList.add('visible');
+  }
+
+
+  function escapeHTML(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+  }
+
+
+  function renderSearchResults(animeList) {
+
+    if (!animeList || animeList.length === 0) {
+      showSearchStatus(`
+        <strong>No anime found</strong>
+        Try searching with another title.
+      `);
+
+      return;
+    }
+
+
+    searchResults.innerHTML = '';
+
+
+    animeList.forEach(item => {
+
+      const anime = item.node;
+
+      if (!anime) return;
+
+
+      const result = document.createElement('a');
+
+      result.className = 'search-result';
+
+      /*
+       * We will use this ID later when title.html
+       * becomes connected to the MAL details endpoint.
+       */
+      result.href =
+        'title.html?id=' +
+        encodeURIComponent(anime.id);
+
+
+      const poster =
+        anime.main_picture?.medium ||
+        anime.main_picture?.large ||
+        '';
+
+
+      const genres =
+        anime.genres
+          ?.slice(0, 3)
+          .map(g => g.name)
+          .join(' • ') ||
+        'Anime';
+
+
+      const score =
+        anime.mean != null
+          ? anime.mean.toFixed(2)
+          : 'N/A';
+
+
+      result.innerHTML = `
+        <img
+          class="search-result-poster"
+          src="${escapeHTML(poster)}"
+          alt=""
+          loading="lazy"
+        >
+
+        <div class="search-result-info">
+
+          <div class="search-result-title">
+            ${escapeHTML(anime.title)}
+          </div>
+
+          <div class="search-result-meta">
+
+            <span class="search-result-score">
+              ★ ${score}
+            </span>
+
+            ${
+              anime.rank
+                ? `<span>#${anime.rank}</span>`
+                : ''
+            }
+
+          </div>
+
+          <div class="search-result-genres">
+            ${escapeHTML(genres)}
+          </div>
+
+        </div>
+
+        <svg
+          class="search-result-arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      `;
+
+
+      searchResults.appendChild(result);
+    });
+
+
+    searchResults.classList.add('visible');
+  }
+
+
+  async function searchAnime(query) {
+
+    const trimmedQuery = query.trim();
+
+
+    if (!trimmedQuery) {
+      hideSearchResults();
+      return;
+    }
+
+
+    /*
+     * Cancel the previous request if the user
+     * searches again before it finishes.
+     */
+    if (currentController) {
+      currentController.abort();
+    }
+
+    currentController = new AbortController();
+
+
+    showSearchStatus('Searching...');
+
+
+    try {
+
+      const response = await fetch(
+        '/api/anime/search?q=' +
+        encodeURIComponent(trimmedQuery),
+        {
+          signal: currentController.signal
+        }
+      );
+
+
+      if (!response.ok) {
+        throw new Error(
+          'Search request failed'
+        );
+      }
+
+
+      const data = await response.json();
+
+
+      renderSearchResults(data.data);
+
+
+    } catch (error) {
+
+      if (error.name === 'AbortError') {
+        return;
+      }
+
+
+      console.error(error);
+
+
+      showSearchStatus(
+        `
+          <strong>Something went wrong</strong>
+          Please try again.
+        `,
+        'error'
+      );
+    }
+  }
+
+
+  searchInput.addEventListener('input', () => {
+
+    clearTimeout(searchTimer);
+
+
+    const query = searchInput.value;
+
+
+    /*
+     * Small delay prevents sending a request
+     * for every single keystroke.
+     */
+    searchTimer = setTimeout(() => {
+      searchAnime(query);
+    }, 350);
+
+  });
+
+
+  /*
+   * Close search results when clicking outside.
+   */
+  document.addEventListener('click', event => {
+
+    if (
+      !searchResults.contains(event.target) &&
+      !searchInput.contains(event.target)
+    ) {
+      hideSearchResults();
+    }
+
+  });
+
+
+  /*
+   * Keep the results visible when the user
+   * clicks back into the search field.
+   */
+  searchInput.addEventListener('focus', () => {
+
+    if (
+      searchResults.innerHTML.trim() !== '' &&
+      searchInput.value.trim() !== ''
+    ) {
+      searchResults.classList.add('visible');
+    }
+
+  });
+
+              </script>
+
 </body>
 </html>
